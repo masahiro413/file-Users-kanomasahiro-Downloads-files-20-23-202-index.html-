@@ -1,0 +1,56 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div>
+        <p class="site-footer__brand">{{ section.settings.shop_name | default: shop.name }}</p>
+        <p class="site-footer__desc">{{ section.settings.description }}</p>
+      </div>
+      <div>
+        <p class="site-footer__heading">ショップ</p>
+        <ul class="site-footer__links">
+          <li><a href="{{ routes.root_url }}">ホーム</a></li>
+          <li><a href="{{ routes.collections_url }}">商品一覧</a></li>
+          <li><a href="{{ routes.cart_url }}">カート</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="site-footer__heading">情報</p>
+        <ul class="site-footer__links">
+          <li><a href="/pages/about">ブランドについて</a></li>
+          <li><a href="/pages/contact">お問い合わせ</a></li>
+          <li><a href="/policies/privacy-policy">プライバシーポリシー</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</span>
+      <span>Powered by Shopify</span>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "フッター",
+  "tag": "section",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "text",
+      "id": "shop_name",
+      "label": "ショップ名"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "ショップ説明",
+      "default": "高品質な商品を世界中にお届けします。"
+    }
+  ],
+  "presets": [
+    {
+      "name": "フッター"
+    }
+  ]
+}
+{% endschema %}

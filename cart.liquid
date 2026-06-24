@@ -1,0 +1,103 @@
+<div class="container cart-page">
+  {% if cart.item_count > 0 %}
+    <h1>カート <span style="font-size:1rem;font-weight:400;color:var(--color-gray);">({{ cart.item_count }}点)</span></h1>
+
+    <form action="/cart" method="post" novalidate id="cart-form">
+      <div style="display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:start;">
+        <!-- Items -->
+        <div>
+          <table class="cart-table">
+            <thead>
+              <tr>
+                <th colspan="2">商品</th>
+                <th>単価</th>
+                <th>数量</th>
+                <th>小計</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in cart.items %}
+                <tr>
+                  <td style="width:96px;">
+                    <a href="{{ item.url }}">
+                      <div class="cart-item__image">
+                        {% if item.image %}
+                          <img
+                            src="{{ item | image_url: width: 160 }}"
+                            alt="{{ item.title | escape }}"
+                            loading="lazy"
+                            width="80"
+                            height="80"
+                          >
+                        {% endif %}
+                      </div>
+                    </a>
+                  </td>
+                  <td>
+                    <div>
+                      <p class="cart-item__title">
+                        <a href="{{ item.url }}">{{ item.product.title }}</a>
+                      </p>
+                      {% unless item.variant.title == 'Default Title' %}
+                        <p class="cart-item__variant">{{ item.variant.title }}</p>
+                      {% endunless %}
+                      <a
+                        href="/cart/change?line={{ forloop.index }}&quantity=0"
+                        class="cart-item__remove"
+                      >削除</a>
+                    </div>
+                  </td>
+                  <td class="cart-price">{{ item.price | money }}</td>
+                  <td>
+                    <input
+                      class="cart-qty-input"
+                      type="number"
+                      name="updates[]"
+                      value="{{ item.quantity }}"
+                      min="0"
+                      max="99"
+                    >
+                  </td>
+                  <td class="cart-price">{{ item.line_price | money }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <div style="display:flex;justify-content:space-between;margin-top:16px;">
+            <a href="{{ routes.collections_url }}" style="font-size:0.85rem;color:var(--color-gray);text-decoration:underline;">買い物を続ける</a>
+            <button type="submit" name="update" class="btn btn--ghost" style="padding:10px 24px;">カートを更新</button>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="cart-summary">
+          <p style="font-size:1rem;font-weight:700;margin-bottom:20px;">注文サマリー</p>
+          {% for item in cart.items %}
+            <div class="cart-summary__row">
+              <span style="font-size:0.85rem;">{{ item.product.title }}{% unless item.variant.title == 'Default Title' %} ({{ item.variant.title }}){% endunless %} x{{ item.quantity }}</span>
+              <span style="font-size:0.85rem;">{{ item.line_price | money }}</span>
+            </div>
+          {% endfor %}
+          <div class="cart-summary__total">
+            <span>合計（税込）</span>
+            <span>{{ cart.total_price | money }}</span>
+          </div>
+          <p style="font-size:0.75rem;color:var(--color-gray);margin-bottom:20px;">送料は次のステップで確定します</p>
+          <div class="cart-actions">
+            <button type="submit" name="checkout" class="btn--dark">レジに進む</button>
+          </div>
+          <a href="{{ routes.collections_url }}" class="btn--ghost" style="display:block;text-align:center;padding:12px;">買い物を続ける</a>
+        </div>
+      </div>
+    </form>
+
+  {% else %}
+    <div class="cart-empty">
+      <div style="font-size:3rem;margin-bottom:16px;">🛒</div>
+      <h1 style="font-size:1.5rem;margin-bottom:12px;">カートは空です</h1>
+      <p>商品をカートに追加してお買い物をお楽しみください。</p>
+      <a href="{{ routes.collections_url }}" class="btn btn--primary">商品を見る</a>
+    </div>
+  {% endif %}
+</div>

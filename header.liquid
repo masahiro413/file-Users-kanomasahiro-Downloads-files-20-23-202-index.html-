@@ -1,0 +1,74 @@
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="{{ routes.root_url }}" class="site-header__logo">
+      {{ section.settings.shop_name | default: shop.name }}
+    </a>
+
+    <nav>
+      <ul class="site-header__nav">
+        <li><a href="{{ routes.root_url }}">ホーム</a></li>
+        <li><a href="{{ routes.collections_url }}">商品一覧</a></li>
+        {% if section.settings.nav_link_1_label != blank %}
+          <li><a href="{{ section.settings.nav_link_1_url }}">{{ section.settings.nav_link_1_label }}</a></li>
+        {% endif %}
+        {% if section.settings.nav_link_2_label != blank %}
+          <li><a href="{{ section.settings.nav_link_2_url }}">{{ section.settings.nav_link_2_label }}</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <a href="{{ routes.cart_url }}" class="cart-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+        カート
+        {% if cart.item_count > 0 %}
+          <span class="cart-count">{{ cart.item_count }}</span>
+        {% endif %}
+      </a>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "ヘッダー",
+  "tag": "section",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "text",
+      "id": "shop_name",
+      "label": "ショップ名",
+      "default": "MY STORE"
+    },
+    {
+      "type": "text",
+      "id": "nav_link_1_label",
+      "label": "ナビリンク1 ラベル"
+    },
+    {
+      "type": "url",
+      "id": "nav_link_1_url",
+      "label": "ナビリンク1 URL"
+    },
+    {
+      "type": "text",
+      "id": "nav_link_2_label",
+      "label": "ナビリンク2 ラベル"
+    },
+    {
+      "type": "url",
+      "id": "nav_link_2_url",
+      "label": "ナビリンク2 URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "ヘッダー"
+    }
+  ]
+}
+{% endschema %}

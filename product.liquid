@@ -1,0 +1,118 @@
+<div class="container">
+  <div class="product-detail">
+
+    <!-- Gallery -->
+    <div class="product-detail__gallery">
+      <div class="product-detail__main-image" id="main-image">
+        {% if product.featured_image %}
+          <img
+            id="main-img"
+            src="{{ product.featured_image | image_url: width: 800 }}"
+            alt="{{ product.featured_image.alt | escape }}"
+            width="800"
+            height="800"
+          >
+        {% else %}
+          <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#aaa;">No Image</div>
+        {% endif %}
+      </div>
+
+      {% if product.images.size > 1 %}
+        <div class="product-detail__thumbs">
+          {% for image in product.images %}
+            <div
+              class="product-detail__thumb{% if forloop.first %} active{% endif %}"
+              data-src="{{ image | image_url: width: 800 }}"
+              onclick="switchImage(this)"
+            >
+              <img src="{{ image | image_url: width: 150 }}" alt="{{ image.alt | escape }}">
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Info -->
+    <div class="product-detail__info">
+      {% if product.vendor != blank %}
+        <p class="product-detail__vendor">{{ product.vendor }}</p>
+      {% endif %}
+
+      <h1 class="product-detail__title">{{ product.title }}</h1>
+
+      <div id="price-display">
+        <span class="product-detail__price" id="current-price">
+          {{ product.selected_or_first_available_variant.price | money }}
+        </span>
+        {% if product.compare_at_price > product.price %}
+          <span class="product-detail__compare-price">{{ product.compare_at_price | money }}</span>
+        {% endif %}
+      </div>
+
+      <hr class="product-detail__divider">
+
+      {% if product.variants.size > 1 %}
+        <p class="product-detail__variant-label">バリエーション</p>
+        <select class="variant-selector" id="variant-selector" onchange="updateVariant(this)">
+          {% for variant in product.variants %}
+            <option
+              value="{{ variant.id }}"
+              data-price="{{ variant.price | money }}"
+              {% unless variant.available %}disabled{% endunless %}
+            >
+              {{ variant.title }}{% unless variant.available %} - 売り切れ{% endunless %}
+            </option>
+          {% endfor %}
+        </select>
+        <hr class="product-detail__divider">
+      {% endif %}
+
+      <p class="product-detail__variant-label" style="margin-bottom:10px;">数量</p>
+      <div class="qty-selector">
+        <button class="qty-btn" onclick="changeQty(-1)" type="button">−</button>
+        <input class="qty-input" id="qty" type="number" value="1" min="1" max="99" readonly>
+        <button class="qty-btn" onclick="changeQty(1)" type="button">＋</button>
+      </div>
+
+      <form action="/cart/add" method="post" id="add-to-cart-form">
+        <input type="hidden" name="id" id="variant-id" value="{{ product.selected_or_first_available_variant.id }}">
+        <input type="hidden" name="quantity" id="form-qty" value="1">
+        <button
+          type="submit"
+          class="add-to-cart-btn"
+          {% unless product.available %}disabled{% endunless %}
+        >
+          {% if product.available %}カートに追加{% else %}売り切れ{% endif %}
+        </button>
+      </form>
+
+      {% if product.description != blank %}
+        <hr class="product-detail__divider">
+        <div class="product-detail__description">
+          {{ product.description }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchImage(el) {
+    document.getElementById('main-img').src = el.dataset.src;
+    document.querySelectorAll('.product-detail__thumb').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function changeQty(delta) {
+    var input = document.getElementById('qty');
+    var next = Math.max(1, parseInt(input.value) + delta);
+    input.value = next;
+    document.getElementById('form-qty').value = next;
+  }
+
+  function updateVariant(sel) {
+    var opt = sel.options[sel.selectedIndex];
+    document.getElementById('current-price').textContent = opt.dataset.price;
+    document.getElementById('variant-id').value = sel.value;
+  }
+</script>

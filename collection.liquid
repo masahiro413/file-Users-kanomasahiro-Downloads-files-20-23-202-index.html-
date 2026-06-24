@@ -1,0 +1,69 @@
+<div class="container">
+  <div class="collection-header">
+    <h1>{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <p>{{ collection.description }}</p>
+    {% endif %}
+  </div>
+
+  {% paginate collection.products by 12 %}
+    <p class="collection-meta">{{ collection.products_count }}件の商品</p>
+
+    {% if collection.products.size > 0 %}
+      <div class="product-grid">
+        {% for product in collection.products %}
+          <a href="{{ product.url | within: collection }}" class="product-card{% unless product.available %} sold-out{% endunless %}">
+            <div class="product-card__image">
+              {% if product.featured_image %}
+                <img
+                  src="{{ product.featured_image | image_url: width: 600 }}"
+                  alt="{{ product.featured_image.alt | escape }}"
+                  loading="lazy"
+                  width="600"
+                  height="450"
+                >
+              {% else %}
+                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:0.85rem;">No Image</div>
+              {% endif %}
+            </div>
+            <div class="product-card__body">
+              {% if product.compare_at_price > product.price %}
+                <span class="product-card__badge">SALE</span>
+              {% endif %}
+              {% if product.vendor != blank %}
+                <p class="product-card__vendor">{{ product.vendor }}</p>
+              {% endif %}
+              <p class="product-card__title">{{ product.title }}</p>
+              <p class="product-card__price">
+                {{ product.price | money }}
+                {% unless product.available %}
+                  <span class="sold-out-label">売り切れ</span>
+                {% endunless %}
+              </p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+
+      {% if paginate.pages > 1 %}
+        <div class="pagination">
+          {% if paginate.previous %}
+            <a href="{{ paginate.previous.url }}">&laquo;</a>
+          {% endif %}
+          {% for part in paginate.parts %}
+            {% if part.is_link %}
+              <a href="{{ part.url }}">{{ part.title }}</a>
+            {% else %}
+              <span class="current">{{ part.title }}</span>
+            {% endif %}
+          {% endfor %}
+          {% if paginate.next %}
+            <a href="{{ paginate.next.url }}">&raquo;</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% else %}
+      <p style="color:var(--color-gray);padding:48px 0;">商品がありません。</p>
+    {% endif %}
+  {% endpaginate %}
+</div>
